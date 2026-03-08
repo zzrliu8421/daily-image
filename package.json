@@ -1,0 +1,15 @@
+{
+  "name": "daily-image-api",
+  "version": "1.0.0",
+  "description": "Image API Service for daily and random images",
+  "main": "page/api/index.js",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "node-fetch": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
