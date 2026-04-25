@@ -21,7 +21,7 @@ os.makedirs(PICTURE_FOLDER, exist_ok=True)
 def fetch_bing_images(n=8):
     """获取最新的Bing壁纸信息"""
     try:
-        url = f"https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n={n}&uhd=1&mkt=zh-CN"
+        url = f"https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n={n}&uhd=1&mkt=zh-CN"
         resp = requests.get(url)
         resp.raise_for_status()
         data = resp.json()
@@ -32,8 +32,8 @@ def fetch_bing_images(n=8):
             logging.info(f"获取到图片: {date}")
             # 生成高分辨率和备用URL
             urlbase = image["urlbase"]
-            high_res_url = f"https://www.bing.com{urlbase}_UHD.jpg"
-            fallback_url = f"https://www.bing.com{urlbase}_1920x1080.jpg"
+            high_res_url = f"https://cn.bing.com{urlbase}_UHD.jpg"
+            fallback_url = f"https://cn.bing.com{urlbase}_1920x1080.jpg"
 
             test_resp = requests.head(high_res_url)
             image_url = high_res_url if test_resp.status_code == 200 else fallback_url
@@ -42,6 +42,8 @@ def fetch_bing_images(n=8):
                 "date": date,
                 "url": image_url,
                 "copyright": image.get("copyright", ""),
+                "title": image.get("title", ""),
+                "copyrightlink": image.get("copyrightlink", ""),
                 "urlbase": urlbase
             })
 
@@ -124,6 +126,8 @@ def merge_and_update_images(new_images, existing_index):
             "date": date,
             "path": f"/picture/{filename}",
             "copyright": img_info.get("copyright", ""),
+            "title": img_info.get("title", ""),
+            "copyrightlink": img_info.get("copyrightlink", ""),
             "url": img_info.get("url", "")
         })
     

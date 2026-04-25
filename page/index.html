@@ -128,11 +128,33 @@
         font-weight: 300;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
       }
+      .hero .overlay .title {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        font-weight: 400;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        color: #f0f0f0;
+      }
       .hero .overlay .copy {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         max-width: 1000px;
         font-weight: 300;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        color: #d0d0d0;
+        margin-bottom: 8px;
+      }
+      .hero .overlay .copy-link {
+        margin-top: 5px;
+      }
+      .hero .overlay .copy-link a {
+        color: #64b5f6;
+        text-decoration: none;
+        font-size: 0.95rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+      .hero .overlay .copy-link a:hover {
+        text-decoration: underline;
+        color: #90caf9;
       }
 
       /* 一言样式 */
@@ -280,6 +302,21 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         transition: all 0.3s ease;
       }
+      .card .title-text {
+        position: absolute;
+        bottom: 50px;
+        left: 0;
+        width: 100%;
+        padding: 10px 15px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        color: #fff;
+        font-size: 1.05rem;
+        font-weight: 400;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
       .card .copy-text {
         position: absolute;
         bottom: 0;
@@ -287,8 +324,8 @@
         width: 100%;
         padding: 15px;
         background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-        color: #fff;
-        font-size: 0.9rem;
+        color: #bbb;
+        font-size: 0.85rem;
         text-align: center;
         opacity: 0;
         transform: translateY(20px);
@@ -297,6 +334,10 @@
       .card:hover .date-label {
         opacity: 0;
         transform: translateY(10px);
+      }
+      .card:hover .title-text {
+        opacity: 1;
+        transform: translateY(0);
       }
       .card:hover .copy-text {
         opacity: 1;
@@ -362,13 +403,37 @@
         bottom: 0;
         left: 0;
         width: 100%;
-        padding: 30px 20px 20px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-        color: #fff;
+        padding: 40px 25px 25px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6), transparent);
         text-align: center;
         transform: translateY(100%);
         opacity: 0;
         transition: all 0.3s ease;
+      }
+      .modal-caption .modal-title {
+        font-size: 1.4rem;
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #fff;
+      }
+      .modal-caption .modal-date {
+        font-size: 0.95rem;
+        color: #aaa;
+        margin-bottom: 10px;
+      }
+      .modal-caption .modal-copyright {
+        font-size: 1rem;
+        color: #ccc;
+        margin-bottom: 10px;
+      }
+      .modal-caption .modal-link a {
+        color: #64b5f6;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+      .modal-caption .modal-link a:hover {
+        text-decoration: underline;
+        color: #90caf9;
       }
 
       .modal-img-container:hover .modal-caption {
@@ -458,7 +523,9 @@
           <p>每日更新，每日精彩</p>
         </div>
         <div class="date" id="hero-date"></div>
+        <div class="title" id="hero-title"></div>
         <div class="copy" id="hero-copy"></div>
+        <div class="copy-link" id="hero-link"></div>
       </div>
     </div>
 
@@ -533,10 +600,10 @@
           const runningDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
           document.getElementById("running-days").textContent = runningDays + " 天";
           
-          // 计算距离下次更新的时间
+          // 计算距离下次更新的时间（北京时间0点更新）
           const tomorrow = new Date(now);
-          tomorrow.setDate(tomorrow.getDate() + (now.getHours() >= 12 ? 1 : 0));
-          tomorrow.setHours(12, 0, 0, 0);
+          tomorrow.setDate(tomorrow.getDate() + (now.getHours() >= 0 ? 1 : 0));
+          tomorrow.setHours(0, 0, 0, 0);
           
           // 计算剩余时间
           let diff = tomorrow - now;
@@ -662,7 +729,12 @@
             const today = data[0];
             const heroImg = document.getElementById("hero-img");
             document.getElementById("hero-date").textContent = today.date;
+            document.getElementById("hero-title").textContent = today.title || "";
             document.getElementById("hero-copy").textContent = today.copyright;
+            const heroLink = document.getElementById("hero-link");
+            if (today.copyrightlink) {
+              heroLink.innerHTML = `<a href="${today.copyrightlink}" target="_blank" rel="nofollow noopener noreferrer">了解更多 &rarr;</a>`;
+            }
             loadImage(heroImg, today.path);
 
             // 其余为历史图
@@ -687,12 +759,17 @@
               dateLabel.className = "date-label";
               dateLabel.textContent = item.date;
 
+              const titleText = document.createElement("div");
+              titleText.className = "title-text";
+              titleText.textContent = item.title || item.date;
+
               const copyText = document.createElement("div");
               copyText.className = "copy-text";
               copyText.textContent = item.copyright;
 
               card.appendChild(img);
               card.appendChild(dateLabel);
+              card.appendChild(titleText);
               card.appendChild(copyText);
               historyEl.appendChild(card);
 
@@ -702,7 +779,18 @@
               // Add click event to show modal
               card.addEventListener("click", () => {
                 modalImage.src = item.path;
-                modalCaption.textContent = `${item.date} - ${item.copyright}`;
+                let captionHTML = "";
+                if (item.title) {
+                  captionHTML += `<div class="modal-title">${item.title}</div>`;
+                }
+                captionHTML += `<div class="modal-date">${item.date}</div>`;
+                if (item.copyright) {
+                  captionHTML += `<div class="modal-copyright">${item.copyright}</div>`;
+                }
+                if (item.copyrightlink) {
+                  captionHTML += `<div class="modal-link"><a href="${item.copyrightlink}" target="_blank" rel="nofollow noopener noreferrer">了解更多 &rarr;</a></div>`;
+                }
+                modalCaption.innerHTML = captionHTML;
                 showModal();
               });
 
