@@ -302,44 +302,39 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         transition: all 0.3s ease;
       }
-      .card .title-text {
+      .card .card-info-overlay {
         position: absolute;
-        bottom: 50px;
+        bottom: 0;
         left: 0;
         width: 100%;
-        padding: 10px 15px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-        color: #fff;
-        font-size: 1.05rem;
-        font-weight: 400;
+        padding: 25px 15px 15px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.7), transparent);
         text-align: center;
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.3s ease;
       }
-      .card .copy-text {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 15px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-        color: #bbb;
+      .card .card-info-overlay .title-text {
+        position: static;
+        background: none;
+        padding: 0;
+        font-size: 1.05rem;
+        font-weight: 400;
+        color: #fff;
+        margin-bottom: 5px;
+      }
+      .card .card-info-overlay .copy-text {
+        position: static;
+        background: none;
+        padding: 0;
         font-size: 0.85rem;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
+        color: #bbb;
       }
       .card:hover .date-label {
         opacity: 0;
         transform: translateY(10px);
       }
-      .card:hover .title-text {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      .card:hover .copy-text {
+      .card:hover .card-info-overlay {
         opacity: 1;
         transform: translateY(0);
       }
@@ -586,6 +581,14 @@
           >Sylvy</a>
       </div>
 
+      <div>
+        <a
+          href="https://beian.miit.gov.cn/"
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+          >豫ICP备2026013756号-1</a>
+      </div>
+
       <script>
         // 动态年份显示
         document.getElementById("year").textContent = new Date().getFullYear();
@@ -759,6 +762,9 @@
               dateLabel.className = "date-label";
               dateLabel.textContent = item.date;
 
+              const cardInfoOverlay = document.createElement("div");
+              cardInfoOverlay.className = "card-info-overlay";
+
               const titleText = document.createElement("div");
               titleText.className = "title-text";
               titleText.textContent = item.title || item.date;
@@ -767,10 +773,12 @@
               copyText.className = "copy-text";
               copyText.textContent = item.copyright;
 
+              cardInfoOverlay.appendChild(titleText);
+              cardInfoOverlay.appendChild(copyText);
+
               card.appendChild(img);
               card.appendChild(dateLabel);
-              card.appendChild(titleText);
-              card.appendChild(copyText);
+              card.appendChild(cardInfoOverlay);
               historyEl.appendChild(card);
 
               // 加载实际图片
